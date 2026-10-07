@@ -1,4 +1,5 @@
 import json
+import io
 
 """
 Note: This is designed to hold a list of contacts as a list of dictionaries.
@@ -17,24 +18,46 @@ class ContactManager:
 
     def load_contacts(self):
         """Loads contacts from a JSON file and converts them to a list of
-        dictionaries
-
+        dictionaries     
         Bonus: What should happen if the file isn't there?
                 What should happen if the file has invalid JSON in it?
         """
-        return []
+        with io.open(self.file, "r") as file:
+            self.contacts = json.load(file)
+        return self.contacts
+    
 
     def add_contact(self, contact):
         """Adds a contact to the list, and saves the file"""
-        pass
+        self.contact = contact
+        self.contacts.append(self.contact)
 
+        with io.open(self.file, "w") as file:
+            json.dump(self.contacts, file)
+
+        
     def update_contact(self, contact_to_update):
         """
-        Updates a contact an saves the file
+        Updates a contact and saves the file
 
         Bonus: What happens when the id doesn't exist?
         """
-        pass
+        updated_contacts = []
+        target_id = contact_to_update["id"]
+        self.contact_to_update = contact_to_update
+
+        for contact in self.contacts:
+            if contact["id"] == target_id:
+                updated_contacts.append(self.contact_to_update)
+            else:
+                updated_contacts.append(contact)
+
+        self.contacts = updated_contacts
+
+        with io.open(self.file, "w") as file:
+            json.dump(self.contacts, file)
+
+
 
     def delete_contact(self, id_to_delete):
         """
@@ -42,4 +65,17 @@ class ContactManager:
 
         Bonus: What happens when the id doesn't exist?
         """
-        pass
+        contacts_to_keep = []
+        target_id = id_to_delete
+        self.id_to_delete = id_to_delete
+
+        for contact in self.contacts:
+            if contact["id"] != target_id:
+                contacts_to_keep.append(contact)
+
+        self.contacts = contacts_to_keep
+
+        with io.open(self.file, "w") as file:
+            json.dump(self.contacts, file)
+
+
